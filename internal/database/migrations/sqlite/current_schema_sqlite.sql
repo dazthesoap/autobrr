@@ -522,6 +522,7 @@ CREATE TABLE feed
     categories      TEXT []   DEFAULT '{}' NOT NULL,
     capabilities    TEXT      DEFAULT '{}' NOT NULL,
     api_key         TEXT,
+    user_agent      TEXT,
     cookie          TEXT,
     tls_skip_verify BOOLEAN DEFAULT FALSE,
     settings        TEXT,

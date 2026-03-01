@@ -318,7 +318,7 @@ func (s *service) testRSS(ctx context.Context, feed *domain.Feed) error {
 		s.log.Debug().Msgf("using proxy %s for feed %s", feed.Proxy.Name, feed.Name)
 	}
 
-	feedResponse, err := feedParser.ParseURLWithContext(ctx, feed.URL)
+	feedResponse, err := feedParser.ParseURLWithContext(ctx, feed.URL, feed.UserAgent)
 	if err != nil {
 		s.log.Error().Err(err).Msgf("error fetching rss feed items")
 		return errors.Wrap(err, "error fetching rss feed items")

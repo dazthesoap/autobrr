@@ -274,7 +274,7 @@ func (j *RSSJob) getFeed(ctx context.Context) (items []*gofeed.Item, err error) 
 		j.Log.Debug().Msgf("using proxy %s for feed %s", j.Feed.Proxy.Name, j.Feed.Name)
 	}
 
-	feed, err := feedParser.ParseURLWithContext(ctx, j.URL)
+	feed, err := feedParser.ParseURLWithContext(ctx, j.URL, j.Feed.UserAgent)
 	if err != nil {
 		return nil, errors.Wrap(err, "error fetching rss feed items")
 	}

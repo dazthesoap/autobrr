@@ -54,6 +54,7 @@ type Feed struct {
 	Categories    []int             `json:"categories"`
 	Capabilities  *FeedCapabilities `json:"capabilities"`
 	ApiKey        string            `json:"api_key"`
+	UserAgent     string            `json:"user_agent"`
 	Cookie        string            `json:"cookie"`
 	TLSSkipVerify bool              `json:"tls_skip_verify"`
 	Settings      *FeedSettingsJSON `json:"settings"`

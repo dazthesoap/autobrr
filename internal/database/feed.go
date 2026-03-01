@@ -50,6 +50,7 @@ func (r *FeedRepo) FindOne(ctx context.Context, params domain.FindOneParams) (*d
 			"f.categories",
 			"f.capabilities",
 			"f.api_key",
+			"f.user_agent",
 			"f.cookie",
 			"f.tls_skip_verify",
 			"f.settings",
@@ -82,14 +83,14 @@ func (r *FeedRepo) FindOne(ctx context.Context, params domain.FindOneParams) (*d
 
 	var f domain.Feed
 
-	var apiKey, cookie, settings sql.NullString
+	var apiKey, userAgent, cookie, settings sql.NullString
 	var indexerID, indexerProxyID sql.NullInt64
 	var indexerIdentifier, indexerIdentifierExternal, indexerName sql.NullString
 	var capabilitiesJSONString sql.NullString
 	var indexerUseProxy sql.NullBool
 	var categoriesText []string
 
-	if err := row.Scan(&f.ID, &indexerID, &indexerIdentifier, &indexerIdentifierExternal, &indexerName, &indexerUseProxy, &indexerProxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &cookie, &f.TLSSkipVerify, &settings, &f.CreatedAt, &f.UpdatedAt, &f.IndexerID); err != nil {
+	if err := row.Scan(&f.ID, &indexerID, &indexerIdentifier, &indexerIdentifierExternal, &indexerName, &indexerUseProxy, &indexerProxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &userAgent, &cookie, &f.TLSSkipVerify, &settings, &f.CreatedAt, &f.UpdatedAt, &f.IndexerID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
 		}
@@ -115,6 +116,7 @@ func (r *FeedRepo) FindOne(ctx context.Context, params domain.FindOneParams) (*d
 	}
 
 	f.ApiKey = apiKey.String
+	f.UserAgent = userAgent.String
 	f.Cookie = cookie.String
 
 	if settings.Valid {
@@ -158,6 +160,7 @@ func (r *FeedRepo) FindByID(ctx context.Context, id int) (*domain.Feed, error) {
 			"f.categories",
 			"f.capabilities",
 			"f.api_key",
+			"f.user_agent",
 			"f.cookie",
 			"f.tls_skip_verify",
 			"f.settings",
@@ -180,12 +183,12 @@ func (r *FeedRepo) FindByID(ctx context.Context, id int) (*domain.Feed, error) {
 
 	var f domain.Feed
 
-	var apiKey, cookie, settings sql.NullString
+	var apiKey, userAgent, cookie, settings sql.NullString
 	var proxyID sql.NullInt64
 	var capabilitiesJSONString sql.NullString
 	var categoriesText []string
 
-	if err := row.Scan(&f.ID, &f.Indexer.ID, &f.Indexer.Identifier, &f.Indexer.IdentifierExternal, &f.Indexer.Name, &f.UseProxy, &proxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &cookie, &f.TLSSkipVerify, &settings, &f.CreatedAt, &f.UpdatedAt); err != nil {
+	if err := row.Scan(&f.ID, &f.Indexer.ID, &f.Indexer.Identifier, &f.Indexer.IdentifierExternal, &f.Indexer.Name, &f.UseProxy, &proxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &userAgent, &cookie, &f.TLSSkipVerify, &settings, &f.CreatedAt, &f.UpdatedAt); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, domain.ErrRecordNotFound
 		}
@@ -203,6 +206,7 @@ func (r *FeedRepo) FindByID(ctx context.Context, id int) (*domain.Feed, error) {
 
 	f.ProxyID = proxyID.Int64
 	f.ApiKey = apiKey.String
+	f.UserAgent = userAgent.String
 	f.Cookie = cookie.String
 
 	if settings.Valid {
@@ -245,6 +249,7 @@ func (r *FeedRepo) Find(ctx context.Context) ([]domain.Feed, error) {
 			"f.categories",
 			"f.capabilities",
 			"f.api_key",
+			"f.user_agent",
 			"f.cookie",
 			"f.tls_skip_verify",
 			"f.last_run",
@@ -273,13 +278,13 @@ func (r *FeedRepo) Find(ctx context.Context) ([]domain.Feed, error) {
 	for rows.Next() {
 		var f domain.Feed
 
-		var apiKey, cookie, lastRunData, settings sql.NullString
+		var apiKey, userAgent, cookie, lastRunData, settings sql.NullString
 		var lastRun sql.NullTime
 		var capabilitiesJSONString sql.NullString
 		var proxyID sql.NullInt64
 		var categoriesText []string
 
-		if err := rows.Scan(&f.ID, &f.Indexer.ID, &f.Indexer.Identifier, &f.Indexer.IdentifierExternal, &f.Indexer.Name, &f.UseProxy, &proxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &cookie, &f.TLSSkipVerify, &lastRun, &lastRunData, &settings, &f.CreatedAt, &f.UpdatedAt); err != nil {
+		if err := rows.Scan(&f.ID, &f.Indexer.ID, &f.Indexer.Identifier, &f.Indexer.IdentifierExternal, &f.Indexer.Name, &f.UseProxy, &proxyID, &f.Name, &f.Type, &f.Enabled, &f.URL, &f.Interval, &f.Timeout, &f.MaxAge, pq.Array(&categoriesText), &capabilitiesJSONString, &apiKey, &userAgent, &cookie, &f.TLSSkipVerify, &lastRun, &lastRunData, &settings, &f.CreatedAt, &f.UpdatedAt); err != nil {
 			return nil, errors.Wrap(err, "error scanning row")
 		}
 
@@ -295,6 +300,7 @@ func (r *FeedRepo) Find(ctx context.Context) ([]domain.Feed, error) {
 		f.LastRun = lastRun.Time
 		f.LastRunData = lastRunData.String
 		f.ApiKey = apiKey.String
+		f.UserAgent = userAgent.String
 		f.Cookie = cookie.String
 
 		f.Settings = &domain.FeedSettingsJSON{
@@ -430,6 +436,7 @@ func (r *FeedRepo) Update(ctx context.Context, feed *domain.Feed) error {
 		Set("categories", pq.Array(formatCategoryIDs(feed.Categories))).
 		Set("capabilities", capabilities).
 		Set("api_key", feed.ApiKey).
+		Set("user_agent", feed.UserAgent).
 		Set("cookie", feed.Cookie).
 		Set("tls_skip_verify", feed.TLSSkipVerify).
 		Set("settings", settings).

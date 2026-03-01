@@ -63,13 +63,16 @@ func (c *RSSParser) WithHTTPClient(client *http.Client) {
 	c.parser.Client = httpClient
 }
 
-func (c *RSSParser) ParseURLWithContext(ctx context.Context, feedURL string) (feed *gofeed.Feed, err error) {
+func (c *RSSParser) ParseURLWithContext(ctx context.Context, feedURL string, userAgent string) (feed *gofeed.Feed, err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, feedURL, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "Gofeed/1.0")
+	if userAgent == "" {
+		userAgent = "Gofeed/1.0"
+	}
+	req.Header.Set("User-Agent", userAgent)
 
 	if c.cookie != "" {
 		// set raw cookie as header

@@ -16,6 +16,7 @@ interface Feed {
   categories: number[];
   capabilities: FeedCaps | null;
   api_key: string;
+  user_agent: string;
   cookie: string;
   tls_skip_verify: boolean;
   last_run: string;

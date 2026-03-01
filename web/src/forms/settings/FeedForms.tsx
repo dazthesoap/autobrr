@@ -28,6 +28,7 @@ interface InitialValues {
   name: string;
   url: string;
   api_key: string;
+  user_agent: string;
   cookie: string;
   tls_skip_verify: boolean;
   interval: number;
@@ -109,6 +110,7 @@ export function FeedUpdateForm({ isOpen, toggle, data}: UpdateFormProps<Feed>) {
     name: feed.name,
     url: feed.url,
     api_key: feed.api_key,
+    user_agent: feed.user_agent || "",
     cookie: feed.cookie || "",
     tls_skip_verify: feed.tls_skip_verify ?? false,
     interval: feed.interval,
@@ -281,6 +283,7 @@ function FormFieldsRSS() {
       <NumberFieldWide name="timeout" label="Refresh timeout" help="Seconds to wait before cancelling refresh."/>
       <NumberFieldWide name="max_age" label="Max age" help="Enter the maximum age of feed content in seconds. It is recommended to set this to '0' to disable the age filter, ensuring all items in the feed are processed."/>
 
+      <TextFieldWide name="user_agent" label="User-Agent" help="Override the default UA Gofeed/1.0" />
       <PasswordFieldWide name="cookie" label="Cookie" help="Not commonly used" />
     </div>
   );
